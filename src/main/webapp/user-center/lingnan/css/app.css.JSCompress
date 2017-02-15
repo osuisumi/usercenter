@@ -1,0 +1,12 @@
+﻿<jscompress public="http://www.jscompress.cn/" command="import-combineset">
+<combinefile path="app.css">
+    <css_fixedrelativeurl value="1" />
+    <sourcefile path=".\reset.css" />
+    <sourcefile path=".\style.css" />
+    <sourcefile path="..\js\calendar\css\fullcalendar.css" />
+    <sourcefile path="..\js\fullcalendar-2.6.1\fullxiugai.css" />
+    <sourcefile path=".\zone.css" />
+    <sourcefile path=".\user-frame.css" />
+    <sourcefile path=".\user-style.css" />
+</combinefile>
+</jscompress>

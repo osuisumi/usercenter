@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haoyu.usercenter.zone.dao.impl.mybatis.ZoneCountInfoMapper">
+	<resultMap id="BaseResultMap" type="com.haoyu.usercenter.zone.utils.ZoneCountInfo">
+	<result column="ZONE_DYNAMIC_NUM" property="zoneDynamicNum"/>
+	<result column="SCHEDULE_NUM" property="scheduleNum"/>
+	<result column="DIARY_NUM" property="diaryNum"/>
+	<result column="RESOURCE_NUM" property="resourceNum"/>
+	<result column="GALLERY_NUM" property="galleryNum"/>
+	<result column="FANS_NUM" property="fansNum"/>
+	<result column="FOLLOW_NUM" property="followNum"/>
+	</resultMap>
+	<select id="select" parameterType="map" resultMap="BaseResultMap">
+		select ID,
+		(select count(id) FANS_NUM from FOLLOW F
+		where F.FOLLOWED_TYPE = 'user_center_user' and IS_DELETED ='N'
+		and F.FOLLOWED_ID = BUV.ID
+		) FANS_NUM,
+		(select count(id) FOLLOW_NUM from FOLLOW F
+		where F.FOLLOWED_TYPE = 'user_center_user' and IS_DELETED ='N'
+		and F.CREATOR = BUV.ID
+		) FOLLOW_NUM,
+		(
+			select 
+				count(R.ID) RESOURCE_NUM 
+			from 
+				RESOURCES R
+			inner join RESOURCE_RELATION RR on RR.RESOURCE_ID = R.ID and RR.IS_DELETED ='N' and RR.TYPE = 'zone'
+			where R.IS_DELETED ='N' and R.CREATOR = BUV.ID and R.BELONG = 'personal'
+				<if test=" isMyself != null and  isMyself == false">
+					and R.PRIVILEGE = 'public'
+				</if>
+		) RESOURCE_NUM,
+		(select count(D.ID) DIARY_NUM from DIARY D
+		where D.IS_DELETED ='N' and D.CREATOR = BUV.ID 
+			<if test=" isMyself != null and  isMyself == false">
+				and D.VISIT_PERMISSION = 'public'
+			</if>
+		) DIARY_NUM,
+		(select count(PG.ID) GALLERY_NUM from PHOTO_GALLERY PG
+		where PG.IS_DELETED = 'N' and PG.CREATOR = BUV.ID
+		) GALLERY_NUM
+		from BASE_USER_VIEW BUV
+		where BUV.ID = #{userId,jdbcType=VARCHAR}
+	</select>
+</mapper>
